@@ -15,8 +15,6 @@ import graphviz
 ctdc = pd.read_csv('CTDC Global Dataset 3 Sept 2018.csv', low_memory=False)
 ctdc.shape
 
-ctdc.gender.sample(5)
-ctdc.groupby('gender').count()
 ctdc.gender.value_counts()
 
 plt.figure()
@@ -25,15 +23,10 @@ plt.title('Gender of Trafficking Victims')
 plt.xlabel('Gender')
 plt.show()
 
-ctdc.ageBroad.sample(10)
 ctdc.ageBroad.value_counts()
 
-plt.figure()
-ctdc.ageBroad.value_counts().plot(kind='bar')
-plt.title('Age of Trafficking Victims')
-plt.xlabel('Age')
-plt.show()
-
+# Reformat the Age so they would correctly sort from youingest to oldest
+# '-99' was not reformatted while awaiting clarification of the meaning
 ctdc.loc[ctdc.ageBroad == '0--8', 'ageBroad'] = '00--08'
 ctdc.loc[ctdc.ageBroad == '9--17', 'ageBroad'] = '09--17'
 plt.figure()
@@ -42,10 +35,11 @@ plt.title('Age of Trafficking Victims')
 plt.xlabel('Age')
 plt.show()
 
-ctdc.citizenship.sample(10)
 ctdc.citizenship.value_counts().sort_values(ascending=False)
 
 # Clean up the data for analysis
+# Because the target is to determine the type of exploration.
+# correlateted features were removed.
 ctdc2 = ctdc.copy()
 ctdc2 = ctdc2.loc[ctdc.yearOfRegistration > 2016]
 ctdc2 = ctdc2.drop(['meansOfControlConcatenated',
@@ -75,8 +69,10 @@ ctdc2 = ctdc2.drop(['meansOfControlConcatenated',
                     'typeOfSexRemoteInteractiveServices',
                     'typeOfSexPrivateSexualServices',
                     'typeOfSexConcatenated'], axis=1)
+ctdc2.shape
 
 # Make a decision tree
+# LabelEncoder creates an ordinal coding scheme for class features
 for column in ctdc2.columns:
     if ctdc2[column].dtype == type(object):
         le = preprocessing.LabelEncoder()
